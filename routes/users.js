@@ -42,5 +42,22 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
   }
 });
 
+//  DELETE /[username]  =>  { deleted: username }
+//
+//  Authorization required
+//
+//  This route is not currently in use in the app, but 
+//  was created since likely would be useful in future if
+//  new features are added
+
+router.delete("/:username", async function (req, res, next) {
+  try {
+    await User.remove(req.params.username);
+    return res.json({ deleted: req.params.username });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 
 module.exports = router;
