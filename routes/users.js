@@ -30,7 +30,8 @@ router.get("/", async function (req, res, next) {
 //
 //  Returns { username, firstName }
 //
-//  Authorization required: same as current user
+//  Authorization required: same as current user 
+//  Request Header should include Authorization: token
 
 
 router.get("/:username", ensureCorrectUser, async function (req, res, next) {

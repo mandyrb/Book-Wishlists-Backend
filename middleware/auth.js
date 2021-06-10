@@ -17,7 +17,6 @@ function authenticateJWT(req, res, next) {
     if (authHeader) {
       const token = authHeader;
       res.locals.user = jwt.verify(token, SECRET_KEY);
-      console.log("In authenticate" + res.locals.user.username);
     }
     return next();
   } catch (err) {
@@ -31,7 +30,7 @@ function authenticateJWT(req, res, next) {
 function ensureCorrectUser(req, res, next) {
   try {
     const user = res.locals.user;
-    if (!user || !(user.username === req.params.username)) {
+    if (!user || !(user.username === req.params.username) || !(user.username === req.body.username)) {
       throw new ExpressError("Unauthorized", 401);
     }
     return next();

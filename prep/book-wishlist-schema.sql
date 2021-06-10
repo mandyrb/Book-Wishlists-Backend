@@ -15,6 +15,13 @@ CREATE TABLE booklists (
 
 CREATE TABLE books (
   isbn VARCHAR(25) PRIMARY KEY,
+  bestsellers_date  TEXT NOT NULL
+);
+
+CREATE TABLE books_on_lists (
+  isbn VARCHAR(25)
+    REFERENCES books ON DELETE CASCADE,
   booklist_id INTEGER
-    REFERENCES booklists ON DELETE CASCADE
+    REFERENCES booklists ON DELETE CASCADE,
+  PRIMARY KEY (isbn, booklist_id)
 );

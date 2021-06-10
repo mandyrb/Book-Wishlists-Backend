@@ -5,7 +5,7 @@ const cors = require("cors");
 const { ExpressError } = require("./expressError");
 const { authenticateJWT } = require("./middleware/auth");
 const authRoutes = require("./routes/auth");
-// const booklistsRoutes = require("./routes/booklists");
+const booklistsRoutes = require("./routes/booklists");
 const usersRoutes = require("./routes/users");
 
 const morgan = require("morgan");
@@ -18,7 +18,7 @@ app.use(morgan("tiny"));
 app.use(authenticateJWT);
 
 app.use("/auth", authRoutes);
-// app.use("/booklists", booklistsRoutes);
+app.use("/booklists", booklistsRoutes);
 app.use("/users", usersRoutes);
 
 //   Handle 404 errors 

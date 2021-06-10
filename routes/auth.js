@@ -30,7 +30,7 @@ router.post("/login", async function (req, res, next) {
 
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
-      throw new ExpressError(errs);
+      throw new ExpressError(errs, 400);
     }
 
     const { username, password } = req.body;
@@ -43,7 +43,7 @@ router.post("/login", async function (req, res, next) {
   }
 });
 
-//  POST /auth/register:   { user } => { token }
+//  POST /auth/register:   { username, password, firstName } => { token }
 //
 //  Returns JWT token which can be used to authenticate further requests.
 
@@ -52,7 +52,7 @@ router.post("/register", async function (req, res, next) {
     const validator = jsonschema.validate(req.body, userRegisterSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
-      throw new ExpressError(errs);
+      throw new ExpressError(errs, 400);
     }
 
     const newUser = await User.register({ ...req.body});
