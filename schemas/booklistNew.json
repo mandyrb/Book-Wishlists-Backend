@@ -8,14 +8,12 @@
     "examples": [
         {
             "name": "Beach Books",
-            "description": "Fun books for the beach",
-            "username": "testuser"
+            "description": "Fun books for the beach"
         }
     ],
     "required": [
         "name",
-        "description",
-        "username"
+        "description"
     ],
     "properties": {
         "name": {
@@ -36,16 +34,6 @@
             "default": "",
             "examples": [
                 "Fun books for the beach"
-            ]
-        },
-        "username": {
-            "$id": "#/properties/username",
-            "type": "string",
-            "title": "The username schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": "",
-            "examples": [
-                "testuser"
             ]
         }
     },

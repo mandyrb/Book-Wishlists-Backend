@@ -1,27 +1,73 @@
 "use strict";
 
-
+const axios = require('axios')
+const { API_KEY } = require("../config.js");
 const jsonschema = require("jsonschema");
 const express = require("express");
 const { ExpressError } = require("../expressError");
 const { ensureCorrectUser } = require("../middleware/auth");
 const Booklist = require("../models/booklist");
 const booklistNewSchema = require("../schemas/booklistNew.json");
-const bookNewSchema = require("../schemas/bookNew.json");
 const router = express.Router();
-// const router = express.Router({ mergeParams: true });
+
+
+//  GET / => { booklist }
+//  
+//  Get new books from the New York Times bestseller API
+//
+//  
+//  Authorization required: none
+//  
+
+router.get("/:type/:date", async function (req, res, next) {
+  try {
+    const result = await axios.get(`https://api.nytimes.com/svc/books/v3/lists/${req.params.date}/combined-print-and-e-book-${req.params.type}.json?api-key=${API_KEY}`);
+    const books = result.data.results.books;
+    console.log("bestsellersDate is " + result.data.results.bestsellers_date);
+    for (let i=0; i<10; i++){
+      console.log("BOOK NUMBER " + i);
+      console.log("isbn is " + books[i].primary_isbn13);
+      console.log("description is" + books[i].description);
+      console.log("title is " + books[i].title);
+      console.log("author is " + books[i].author);
+      console.log("cover url is " + books[i].book_image);
+      console.log("amazon link is " + books[i].amazon_product_url);
+    }
+    return res.json({ books });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
+//  GET /[username][id] => { booklist }
+//  
+//  Get all books on a booklist
+//
+//  { books: [ { isbn, bestsellersDate, booklistId }, ...] }
+//  
+//  Authorization required: same username as logged in user
+//  
+
+// router.get("/:username/:id", ensureCorrectUser, async function (req, res, next) {
+//   try {
+//     const books = await Booklist.get(req.params.id);
+//     return res.json({ books });
+//   } catch (err) {
+//     return next(err);
+//   }
+// });
 
 
 // POST /[username] { booklist } => { booklist }
 //
-// Create a new booklist: booklist should be { name, description, username }
+// Create a new booklist: booklist should be { name, description }
 //
 // Returns { id, name, description, username }
 //
 // Authorization required: same username as logged in user
 
-router.post("/new/:username", ensureCorrectUser, async function (req, res, next) {
-    console.log("in :/username route for posting new list")
+router.post("/:username", ensureCorrectUser, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, booklistNewSchema);
     if (!validator.valid) {
@@ -36,55 +82,22 @@ router.post("/new/:username", ensureCorrectUser, async function (req, res, next)
   }
 });
 
-// POST /[id][username] { book } => { book }
-//
-// Add book to booklist: book should be { isbn, bestsellersDate, username }
-//
-// Returns { isbn, bestsellersDate, booklistId, username }
-//
-// Authorization required: same username as logged in user
 
-router.post("/:id/:username", ensureCorrectUser, async function (req, res, next) {
-    try {
-      const validator = jsonschema.validate(req.body, bookNewSchema);
-      if (!validator.valid) {
-        const errs = validator.errors.map(e => e.stack);
-        throw new ExpressError(errs);
-      }
-      const book = await Booklist.addBook(req.params.id, req.body);
-      return res.status(201).json({ book });
-    } catch (err) {
-      return next(err);
-    }
-});
-
-//  GET /[id][username] => { booklist }
+//  DELETE /[username]/[id] => deleted: id
 //  
-//  Get all books on a booklist
-//
-//  { books: [ { isbn, bestsellersDate, booklistId }, ...] }
+//  Delete booklist
 //  
 //  Authorization required: same username as logged in user
 //  
 
-router.get("/:id/:username", ensureCorrectUser, async function (req, res, next) {
+router.delete("/:username/:id", ensureCorrectUser, async function (req, res, next) {
   try {
-    const books = await Booklist.getBooks(req.params.id);
-    return res.json({ books });
+    await Booklist.remove(req.params.id);
+    return res.json({ deleted: +req.params.id });
   } catch (err) {
     return next(err);
   }
 });
-
-
-// router.delete("/:id", ensureAdmin, async function (req, res, next) {
-//   try {
-//     await Job.remove(req.params.id);
-//     return res.json({ deleted: +req.params.id });
-//   } catch (err) {
-//     return next(err);
-//   }
-// });
 
 
 module.exports = router;

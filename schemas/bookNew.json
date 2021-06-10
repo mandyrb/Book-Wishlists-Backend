@@ -9,13 +9,13 @@
         {
             "isbn": "9780655697077",
             "bestsellersDate": "2021-03-13",
-            "username": "testuser"
+            "booklistId": 1
         }
     ],
     "required": [
         "isbn",
         "bestsellersDate",
-        "username"
+        "booklistId"
     ],
     "properties": {
         "isbn": {
@@ -38,14 +38,14 @@
                 "2021-03-13"
             ]
         },
-        "username": {
-            "$id": "#/properties/username",
-            "type": "string",
-            "title": "The username schema",
+        "booklistId": {
+            "$id": "#/properties/booklistId",
+            "type": "integer",
+            "title": "The booklistId schema",
             "description": "An explanation about the purpose of this instance.",
-            "default": "",
+            "default": 0,
             "examples": [
-                "testuser"
+                1
             ]
         }
     },

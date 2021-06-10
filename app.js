@@ -6,6 +6,7 @@ const { ExpressError } = require("./expressError");
 const { authenticateJWT } = require("./middleware/auth");
 const authRoutes = require("./routes/auth");
 const booklistsRoutes = require("./routes/booklists");
+const booksRoutes = require("./routes/books");
 const usersRoutes = require("./routes/users");
 
 const morgan = require("morgan");
@@ -19,6 +20,7 @@ app.use(authenticateJWT);
 
 app.use("/auth", authRoutes);
 app.use("/booklists", booklistsRoutes);
+app.use("/books", booksRoutes);
 app.use("/users", usersRoutes);
 
 //   Handle 404 errors 

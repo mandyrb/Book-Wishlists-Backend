@@ -102,7 +102,8 @@ class User {
 //   Given a username, returns detail data about the user
 //
 //   Returns { username, firstName, booklists }
-//     where booklists is { id, name, description }
+//     where booklists is [{ id, name, description, books },... ]
+//     and books is [ { isbn, bestsellersDate, booklistId },... ]
 //
 //   Throws error if user not found
 
@@ -126,6 +127,18 @@ class User {
            WHERE username = $1`, [username]);
 
     user.booklists = userBooklistRes.rows;
+
+    for (let i=0; i<user.booklists.length; i++){
+      let id = user.booklists[i].id;
+      const bookRes = await db.query(
+        `SELECT books.isbn AS isbn, bestsellers_date AS "bestsellersDate", booklist_id AS "booklistId"
+         FROM books JOIN books_on_lists ON books.isbn = books_on_lists.isbn
+         JOIN booklists ON booklists.id = books_on_lists.booklist_id
+         WHERE booklists.id = $1`, [id]);
+
+      user.booklists[i].books = bookRes.rows;
+    }
+
     return user;
   }
 

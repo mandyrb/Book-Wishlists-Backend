@@ -30,7 +30,8 @@ function authenticateJWT(req, res, next) {
 function ensureCorrectUser(req, res, next) {
   try {
     const user = res.locals.user;
-    if (!user || !(user.username === req.params.username) || !(user.username === req.body.username)) {
+    // if (!user || !(user.username === req.params.username) || !(user.username === req.body.username)) {
+    if (!user || !(user.username === req.params.username)) {
       throw new ExpressError("Unauthorized", 401);
     }
     return next();

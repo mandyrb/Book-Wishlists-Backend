@@ -28,7 +28,8 @@ router.get("/", async function (req, res, next) {
 
 //  GET /[username] => { user }
 //
-//  Returns { username, firstName }
+//  Returns { username, firstName, booklists }
+//    where booklists is { id, name, description }
 //
 //  Authorization required: same as current user 
 //  Request Header should include Authorization: token
