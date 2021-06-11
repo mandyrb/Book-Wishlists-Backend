@@ -54,7 +54,7 @@ router.post("/:username/:booklistId", ensureCorrectUser, async function (req, re
       throw new ExpressError(errs);
     }
 
-    const book = await Book.add(req.body, req.params.booklistId);
+    const book = await Book.add(req.body, req.params.booklistId, req.params.username);
     return res.status(201).json({ book });
   } catch (err) {
     return next(err);
@@ -71,7 +71,7 @@ router.post("/:username/:booklistId", ensureCorrectUser, async function (req, re
 
 router.delete("/:username/:booklistId", ensureCorrectUser, async function (req, res, next) {
     try {
-      await Book.remove(req.body.isbn, req.params.booklistId);
+      await Book.remove(req.body.isbn, req.params.booklistId, req.params.username);
       return res.json({ deleted: +req.body.isbn });
     } catch (err) {
       return next(err);

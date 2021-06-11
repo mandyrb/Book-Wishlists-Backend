@@ -37,8 +37,14 @@ static async get(isbn) {
 //  Returns { isbn, title, author, bestsellersDate, type, booklistId }
 
 
-static async add(data, booklistId) {
+static async add(data, booklistId, username) {
     const isbn = data.isbn.toString();
+
+    const booklistExists = await db.query(
+          `SELECT * from booklists WHERE id=$1 AND username=$2`, [booklistId, username]);
+
+    if(!booklistExists.rows[0]) throw new ExpressError(`You don't have a booklist with id ${booklistId}`, 404);
+
     const bookExists = await db.query(
           `SELECT * FROM books 
            WHERE isbn = $1`, [isbn]);
@@ -88,8 +94,14 @@ static async add(data, booklistId) {
 //   Throws error if book not found
 //    
 
-static async remove(isbn, booklistId) {
+static async remove(isbn, booklistId, username) {
     const isbnString = isbn.toString();
+
+    const booklistExists = await db.query(
+          `SELECT * from booklists WHERE id=$1 AND username=$2`, [booklistId, username]);
+
+    if(!booklistExists.rows[0]) throw new ExpressError(`You don't have a booklist with id ${booklistId}`, 404);
+
     const result = await db.query(
           `DELETE
            FROM books_on_lists
