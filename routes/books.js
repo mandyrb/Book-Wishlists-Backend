@@ -10,55 +10,43 @@ const Book = require("../models/book");
 const bookNewSchema = require("../schemas/bookNew.json");
 const router = express.Router();
 
-// GET/isbn => book
+//  GET [type] / [date] / [isbn] => { bookDetails }
 //
-// Get book details from the New York Times Bestsellers API
-//
+//  Get book details from the New York Times Bestsellers API
+//      where bookDetails is { title, author, description, coverUrl, amazonLink }
 //
 //  Authorization required: none
-/////////////////////////////////////
-// Need to work on getting book details based on isbn from results
-/////////////////////////////////////
 
-router.get("/:type/:/bestsellers-date/:isbn", async function (req, res, next) {
-    try {
-    const result = await axios.get(`https://api.nytimes.com/svc/books/v3/lists/${req.params.bestsellers-date}/combined-print-and-e-book-${req.params.type}.json?api-key=${API_KEY}`);
-    const books = result.data.results.books;
-    console.log("bestsellersDate is " + result.data.results.bestsellers_date);
-    return res.json({ books });
-    } catch (err) {
-      return next(err);
+router.get("/:type/:date/:isbn", async function (req, res, next) {
+  try {
+    const result = await axios.get(`https://api.nytimes.com/svc/books/v3/lists/${req.params.date}/combined-print-and-e-book-${req.params.type}.json?api-key=${API_KEY}`);
+    const booksData = result.data.results.books;
+    let bookDetails = {};
+    for (let book of booksData){
+      if (book.primary_isbn13 = req.params.isbn){
+        bookDetails["title"] = book.title;
+        bookDetails["author"] = book.author;
+        bookDetails["description"] = book.description;
+        bookDetails["coverUrl"] = book.book_image;
+        bookDetails["amazonLink"] = book.amazon_product_url;
+      }
     }
+    return res.json({ bookDetails });
+  } catch (err) {
+    return next(err);
+  }
 });
 
 
-//  GET /[isbn] => { book }
-//  
-//  Get a book from isbn
+// POST /[username] [booklistId] { book } => { book }
 //
-//  returns: { isbn, bestsellersDate }
-//  
-//  Authorization required: none
-//  
-
-// router.get("/:isbn", async function (req, res, next) {
-//   try {
-//     const book = await Book.get(req.params.isbn);
-//     return res.json({ book });
-//   } catch (err) {
-//     return next(err);
-//   }
-// });
-
-// POST /[isbn] { book } => { book }
+// Add book to booklist: data should be { isbn, title, author, bestsellersDate, type }
 //
-// Add book to booklist: data should be { isbn, bestsellersDate, booklistId }
-//
-// Returns { id, name, description, username }
+// Returns { isbn, title, author, bestsellersDate, type, booklistId }
 //
 // Authorization required: same username as logged in user
 
-router.post("/:username", ensureCorrectUser, async function (req, res, next) {
+router.post("/:username/:booklistId", ensureCorrectUser, async function (req, res, next) {
   try {
     const validator = jsonschema.validate(req.body, bookNewSchema);
     if (!validator.valid) {
@@ -66,7 +54,7 @@ router.post("/:username", ensureCorrectUser, async function (req, res, next) {
       throw new ExpressError(errs);
     }
 
-    const book = await Book.add(req.body, req.params.username);
+    const book = await Book.add(req.body, req.params.booklistId);
     return res.status(201).json({ book });
   } catch (err) {
     return next(err);
@@ -74,16 +62,16 @@ router.post("/:username", ensureCorrectUser, async function (req, res, next) {
 });
 
 
-//  DELETE /[username] => deleted: isbn
+//  DELETE /[username][booklistId] => deleted: isbn
 //  
-//  Remove book from booklist: data should be { isbn, booklistId }
+//  Remove book from booklist: data should be { isbn }
 //  
 //  Authorization required: same username as logged in user
 //  
 
-router.delete("/:username", ensureCorrectUser, async function (req, res, next) {
+router.delete("/:username/:booklistId", ensureCorrectUser, async function (req, res, next) {
     try {
-      await Book.remove(req.body.isbn, req.body.booklistId);
+      await Book.remove(req.body.isbn, req.params.booklistId);
       return res.json({ deleted: +req.body.isbn });
     } catch (err) {
       return next(err);

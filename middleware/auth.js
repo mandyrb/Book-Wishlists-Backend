@@ -24,13 +24,12 @@ function authenticateJWT(req, res, next) {
   }
 }
 
-// Middleware for when user must provide a valid token & be user matching
+// Middleware for when user must provide a valid token & be the user matching
 // username provided as route param; if not, raises Unauthorized.
 
 function ensureCorrectUser(req, res, next) {
   try {
     const user = res.locals.user;
-    // if (!user || !(user.username === req.params.username) || !(user.username === req.body.username)) {
     if (!user || !(user.username === req.params.username)) {
       throw new ExpressError("Unauthorized", 401);
     }

@@ -7,10 +7,13 @@ class Book {
 
 //   Given a book isbn, return book
 //    
-//   Returns { isbn, bestsellersDate }
+//   Returns { isbn, title, author, bestsellersDate, type }
 //   
 //   Throws error if not found
 //    
+//   This method is not currently in use in the app, but 
+//   was created since likely would be useful in future if
+//   new features are added
 
 static async get(isbn) {
     console.log(isbn);
@@ -21,7 +24,7 @@ static async get(isbn) {
     console.log(bookRes.rows[0])
     const book = bookRes.rows[0];
   
-    if (!book) throw new ExpressError(`No book: ${isbn}`);
+    if (!book) throw new ExpressError(`No book: ${isbn}`, 404);
   
     return book;
   }
@@ -29,12 +32,12 @@ static async get(isbn) {
 
 //  Add book to booklist (from data), update db, return new book
 //
-//  Data should be { bestsellersDate, booklistId }
+//  Data should be { isbn, title, author, bestsellersDate, type }
 //
-//  Returns { isbn, bestsellersDate }
+//  Returns { isbn, title, author, bestsellersDate, type, booklistId }
 
 
-static async add(data) {
+static async add(data, booklistId) {
     const isbn = data.isbn.toString();
     const bookExists = await db.query(
           `SELECT * FROM books 
@@ -42,18 +45,20 @@ static async add(data) {
     
     if(!bookExists.rows[0]){
         await db.query(
-            `INSERT INTO books (isbn,
-                                bestsellers_date)
-            VALUES ($1, $2)`,
+            `INSERT INTO books (isbn, title, author, bestsellers_date, type)
+            VALUES ($1, $2, $3, $4, $5)`,
             [
             isbn,
-            data.bestsellersDate
+            data.title,
+            data.author,
+            data.bestsellersDate,
+            data.type
             ]);
     }
 
     const bookOnList = await db.query(
         `SELECT * FROM books_on_lists 
-         WHERE isbn = $1 AND booklist_id = $2`, [isbn, data.booklistId]);
+         WHERE isbn = $1 AND booklist_id = $2`, [isbn, booklistId]);
 
     if (!bookOnList.rows[0]){
         await db.query(
@@ -62,12 +67,12 @@ static async add(data) {
             VALUES ($1, $2)`,
             [
             isbn,
-            data.booklistId
+            booklistId
             ]);
     }
 
     const result = await db.query(
-        `SELECT books.isbn AS isbn, bestsellers_date AS bestsellersDate
+        `SELECT books.isbn AS isbn, title, author, bestsellers_date AS bestsellersDate, type, booklists.id AS booklistId
            FROM books JOIN books_on_lists ON books.isbn = books_on_lists.isbn
            JOIN booklists ON booklists.id = books_on_lists.booklist_id
            WHERE books.isbn = $1`, [isbn]);
@@ -78,11 +83,9 @@ static async add(data) {
 
   }
 
-//   Delete given book from booklist
-//
-//   Data should be
+//   Delete a book with given isbn from a user's booklist
 //    
-//  Throws error if list not found
+//   Throws error if book not found
 //    
 
 static async remove(isbn, booklistId) {
@@ -94,7 +97,7 @@ static async remove(isbn, booklistId) {
            RETURNING isbn`, [isbnString, booklistId]);
     const book = result.rows[0];
 
-    if (!book) throw new ExpressError(`Book not found`);
+    if (!book) throw new ExpressError(`Book not found on list ${booklistId}`, 404);
   }
 }
 

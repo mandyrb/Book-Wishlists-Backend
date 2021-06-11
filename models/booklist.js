@@ -5,12 +5,15 @@ const { ExpressError} = require("../expressError");
 
 class Booklist {
 
-//   Given a booklist id, return books on booklist
+//   Given a booklist id, return books on a user's booklist
 //    
-//   Returns [{ isbn, bestsellersDate, booklistId }, ...]
+//   Returns [{ isbn, title, author, bestsellersDate, type }, ...]
 //   
 //   Throws error if not found
 //    
+//   This method is not currently in use in the app, but 
+//   was created since likely would be useful in future if
+//   new features are added
 
 static async get(id) {
 
@@ -22,7 +25,7 @@ static async get(id) {
 
   const booklist = booklistRes.rows;
 
-  if (!booklist) throw new ExpressError(`No booklist: ${id}`);
+  if (!booklist) throw new ExpressError(`No booklist: ${id}`, 404);
 
   return booklist;
 }
@@ -32,16 +35,28 @@ static async get(id) {
 //
 //  Data should be { name, description }
 //
-//  Returns { id, name, description, username }
+//  Returns { id, name, description }
+//
+//  Throws an error if user already has booklist with that name
 
 
   static async create(data, username) {
+    const duplicateCheck = await db.query(
+      `SELECT name
+       FROM booklists
+       WHERE name = $1 AND username = $2`,
+       [data.name, username],
+    );
+
+    if (duplicateCheck.rows[0]) {
+      throw new ExpressError(`You already have a booklist with name: ${data.name}`, 400);
+    }
     const result = await db.query(
           `INSERT INTO booklists (name,
                              description,
                              username)
            VALUES ($1, $2, $3)
-           RETURNING id, name, description, username`,
+           RETURNING id, name, description`,
         [
           data.name,
           data.description,
@@ -54,9 +69,9 @@ static async get(id) {
   }
 
 
-//   Delete given booklist from database; returns undefined.
+//   Delete a booklist from database; returns undefined.
 //    
-//    Throws error if list not found
+//   Throws error if list not found
 //    
 
   static async remove(id) {
@@ -67,7 +82,7 @@ static async get(id) {
            RETURNING id`, [id]);
     const booklist = result.rows[0];
 
-    if (!booklist) throw new NewExpressError(`No booklist: ${id}`);
+    if (!booklist) throw new ExpressError(`No booklist: ${id}`, 404);
   }
 }
 

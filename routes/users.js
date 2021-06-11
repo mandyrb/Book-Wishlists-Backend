@@ -10,11 +10,11 @@ const router = express.Router();
 //
 //  Returns list of all users
 //
-//  Authorization required
-//
 //  This route is not currently in use in the app, but 
 //  was created since likely would be useful in future if
 //  new features are added
+//
+//  Authorization should be required, likely admin
 
 router.get("/", async function (req, res, next) {
   try {
@@ -29,10 +29,10 @@ router.get("/", async function (req, res, next) {
 //  GET /[username] => { user }
 //
 //  Returns { username, firstName, booklists }
-//    where booklists is { id, name, description }
+//    where booklists is [{ id, name, description, books },... ]
+//    and books is [ { isbn, title, author, bestsellersDate, type },... ]
 //
 //  Authorization required: same as current user 
-//  Request Header should include Authorization: token
 
 
 router.get("/:username", ensureCorrectUser, async function (req, res, next) {
@@ -46,11 +46,11 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
 
 //  DELETE /[username]  =>  { deleted: username }
 //
-//  Authorization required
-//
 //  This route is not currently in use in the app, but 
 //  was created since likely would be useful in future if
 //  new features are added
+//
+//  Authorization should be required, likely admin
 
 router.delete("/:username", async function (req, res, next) {
   try {

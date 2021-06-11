@@ -7,7 +7,7 @@ CREATE TABLE users (
 
 CREATE TABLE booklists (
   id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
+  name TEXT NOT NULL UNIQUE,
   description TEXT NOT NULL,
   username VARCHAR(25) NOT NULL
     REFERENCES users ON DELETE CASCADE
@@ -15,7 +15,10 @@ CREATE TABLE booklists (
 
 CREATE TABLE books (
   isbn VARCHAR(25) PRIMARY KEY,
-  bestsellers_date  TEXT NOT NULL
+  title TEXT NOT NULL,
+  author TEXT NOT NULL,
+  bestsellers_date  TEXT NOT NULL,
+  type TEXT NOT NULL
 );
 
 CREATE TABLE books_on_lists (
@@ -25,3 +28,4 @@ CREATE TABLE books_on_lists (
     REFERENCES booklists ON DELETE CASCADE,
   PRIMARY KEY (isbn, booklist_id)
 );
+

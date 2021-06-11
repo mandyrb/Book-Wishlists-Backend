@@ -7,15 +7,19 @@
     "default": {},
     "examples": [
         {
-            "isbn": "9780655697077",
-            "bestsellersDate": "2021-03-13",
-            "booklistId": 1
+            "isbn": "9780316492935",
+            "title": "HOW THE WORD IS PASSED",
+            "author": "Clint Smith",
+            "bestsellersDate": "2021-06-05",
+            "type": "nonfiction"
         }
     ],
     "required": [
         "isbn",
+        "title",
+        "author",
         "bestsellersDate",
-        "booklistId"
+        "type"
     ],
     "properties": {
         "isbn": {
@@ -25,7 +29,27 @@
             "description": "An explanation about the purpose of this instance.",
             "default": "",
             "examples": [
-                "9780655697077"
+                "9780316492935"
+            ]
+        },
+        "title": {
+            "$id": "#/properties/title",
+            "type": "string",
+            "title": "The title schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "HOW THE WORD IS PASSED"
+            ]
+        },
+        "author": {
+            "$id": "#/properties/author",
+            "type": "string",
+            "title": "The author schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "Clint Smith"
             ]
         },
         "bestsellersDate": {
@@ -35,17 +59,17 @@
             "description": "An explanation about the purpose of this instance.",
             "default": "",
             "examples": [
-                "2021-03-13"
+                "2021-06-05"
             ]
         },
-        "booklistId": {
-            "$id": "#/properties/booklistId",
-            "type": "integer",
-            "title": "The booklistId schema",
+        "type": {
+            "$id": "#/properties/type",
+            "type": "string",
+            "title": "The type schema",
             "description": "An explanation about the purpose of this instance.",
-            "default": 0,
+            "default": "",
             "examples": [
-                1
+                "nonfiction"
             ]
         }
     },

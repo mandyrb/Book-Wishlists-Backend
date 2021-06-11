@@ -9,17 +9,25 @@ INSERT INTO booklists (name, description, username)
 VALUES ('First booklist', 'Fun books to read when relaxing', 'testuser'),
        ('Second booklist', 'Books I heard good things about', 'testuser');
 
-INSERT INTO books (isbn, bestsellers_date)
-VALUES ('9781250178602', '2021-04-10'),
-       ('9781982139131', '2021-03-13'),
-       ('9780525559474', '2021-04-10'),
-       ('9780655697077', '2021-03-13');
+INSERT INTO books (isbn, title, author, bestsellers_date, type)
+VALUES ('9780316492935', 'HOW THE WORD IS PASSED', 'Clint Smith', '2021-06-05', 'nonfiction'),
+       ('9781728251059', 'FREED', 'E.L. James', '2021-06-05', 'fiction'),
+       ('9781538748169', 'THE BOY FROM THE WOODS', 'Harlan Coben', '2020-03-21', 'fiction'),
+       ('9780385348713', 'THE SPLENDID AND THE VILE', 'Erik Larson', '2020-03-21', 'nonfiction');
+
+CREATE TABLE books (
+  isbn VARCHAR(25) PRIMARY KEY,
+  title TEXT NOT NULL,
+  author TEXT NOT NULL,
+  bestsellers_date  TEXT NOT NULL,
+  type TEXT NOT NULL
+);
 
 INSERT INTO books_on_lists (isbn, booklist_id)
-VALUES ('9781250178602', 1),
-       ('9781982139131', 1),
-       ('9780525559474', 2),
-       ('9780655697077', 2);
+VALUES ('9780316492935', 1),
+       ('9781538748169', 1),
+       ('9781728251059', 2),
+       ('9780385348713', 2);
 
        
        
