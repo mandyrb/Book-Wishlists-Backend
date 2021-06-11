@@ -18,7 +18,7 @@ class Booklist {
 static async get(id) {
 
   const booklistRes = await db.query(
-        `SELECT books.isbn AS isbn, bestsellers_date AS bestsellersDate, booklist_id AS booklistID
+        `SELECT books.isbn AS isbn, title, author, bestsellers_date AS "bestsellersDate", type
          FROM books JOIN books_on_lists ON books.isbn = books_on_lists.isbn
          JOIN booklists ON booklists.id = books_on_lists.booklist_id
          WHERE booklists.id = $1`, [id]);

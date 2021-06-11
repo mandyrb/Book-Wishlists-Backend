@@ -16,12 +16,12 @@ class Book {
 //   new features are added
 
 static async get(isbn) {
-    console.log(isbn);
+
     const bookRes = await db.query(
-        `SELECT * FROM books 
+        `SELECT isbn, title, author, bestsellers_date AS "bestsellersDate", type
+         FROM books
          WHERE isbn = $1`, [isbn]);
   
-    console.log(bookRes.rows[0])
     const book = bookRes.rows[0];
   
     if (!book) throw new ExpressError(`No book: ${isbn}`, 404);
@@ -78,7 +78,7 @@ static async add(data, booklistId, username) {
     }
 
     const result = await db.query(
-        `SELECT books.isbn AS isbn, title, author, bestsellers_date AS bestsellersDate, type, booklists.id AS booklistId
+        `SELECT books.isbn AS isbn, title, author, bestsellers_date AS "bestsellersDate", type, booklists.id AS "booklistId"
            FROM books JOIN books_on_lists ON books.isbn = books_on_lists.isbn
            JOIN booklists ON booklists.id = books_on_lists.booklist_id
            WHERE books.isbn = $1`, [isbn]);
