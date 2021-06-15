@@ -19,7 +19,7 @@ const router = express.Router();
 //  Authorization required: none
 //  
 
-router.get("/:type/:date", async function (req, res, next) {
+router.get("/:type/:date/:username", ensureCorrectUser, async function (req, res, next) {
   try {
     const result = await axios.get(`https://api.nytimes.com/svc/books/v3/lists/${req.params.date}/combined-print-and-e-book-${req.params.type}.json?api-key=${API_KEY}`);
     const booksData = result.data.results.books;
@@ -29,7 +29,7 @@ router.get("/:type/:date", async function (req, res, next) {
         isbn: booksData[i].primary_isbn13, 
         title: booksData[i].title, 
         author: booksData[i].author, 
-        bestsellersDate: result.data.results.bestsellers_date,
+        bestsellersDate: result.data.results.published_date,
         type: req.params.type}
       books.push(book);
     }

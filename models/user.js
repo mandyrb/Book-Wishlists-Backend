@@ -104,6 +104,7 @@ class User {
 
 
   static async get(username) {
+
     const userRes = await db.query(
           `SELECT username,
                   first_name AS "firstName"

@@ -50,9 +50,9 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
 //  was created since likely would be useful in future if
 //  new features are added
 //
-//  Authorization should be required, likely admin
+//  Authorization should be required, likely same user and/or admin
 
-router.delete("/:username", async function (req, res, next) {
+router.delete("/:username", ensureCorrectUser, async function (req, res, next) {
   try {
     await User.remove(req.params.username);
     return res.json({ deleted: req.params.username });
