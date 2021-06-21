@@ -22,8 +22,10 @@ router.get("/:type/:date/:isbn/:username", ensureCorrectUser, async function (re
     const result = await axios.get(`https://api.nytimes.com/svc/books/v3/lists/${req.params.date}/combined-print-and-e-book-${req.params.type}.json?api-key=${API_KEY}`);
     const booksData = result.data.results.books;
     let bookDetails = {};
+    let bookFound = false;
     for (let book of booksData){
       if (book.primary_isbn13 === req.params.isbn){
+        bookFound=true;
         bookDetails["title"] = book.title;
         bookDetails["author"] = book.author;
         bookDetails["description"] = book.description;
@@ -31,9 +33,13 @@ router.get("/:type/:date/:isbn/:username", ensureCorrectUser, async function (re
         bookDetails["amazonLink"] = book.amazon_product_url;
       }
     }
+    console.log(bookFound);
+    if (bookFound === false) return next(new ExpressError("No book found with that isbn for that bestsellers list date", 404));
     return res.json({ bookDetails });
   } catch (err) {
-    return next(err);
+    if(err.response.status === 404) return next(new ExpressError("No list found for list name and/or date provided", 404));
+    else if (err.response.status === 400) return next(new ExpressError("Invalid data format", 400))
+    else return next(err);
   }
 });
 
@@ -51,7 +57,7 @@ router.post("/:username/:booklistId", ensureCorrectUser, async function (req, re
     const validator = jsonschema.validate(req.body, bookNewSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
-      throw new ExpressError(errs);
+      throw new ExpressError(errs, 400);
     }
 
     const book = await Book.add(req.body, req.params.booklistId, req.params.username);
@@ -71,6 +77,7 @@ router.post("/:username/:booklistId", ensureCorrectUser, async function (req, re
 
 router.delete("/:username/:booklistId", ensureCorrectUser, async function (req, res, next) {
     try {
+      if(!req.body.isbn) throw new ExpressError("isbn required", 400);
       await Book.remove(req.body.isbn, req.params.booklistId, req.params.username);
       return res.json({ deleted: +req.body.isbn });
     } catch (err) {

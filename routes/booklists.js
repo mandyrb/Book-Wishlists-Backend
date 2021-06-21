@@ -35,7 +35,9 @@ router.get("/:type/:date/:username", ensureCorrectUser, async function (req, res
     }
     return res.json({ books });
   } catch (err) {
-    return next(err);
+    if(err.response.status === 404) return next(new ExpressError("No list found for list name and/or date provided", 404));
+    else if (err.response.status === 400) return next(new ExpressError("Invalid date format", 400))
+    else return next(err);
   }
 });
 
@@ -55,7 +57,7 @@ router.post("/:username", ensureCorrectUser, async function (req, res, next) {
     const validator = jsonschema.validate(req.body, booklistNewSchema);
     if (!validator.valid) {
       const errs = validator.errors.map(e => e.stack);
-      throw new ExpressError(errs);
+      throw new ExpressError(errs, 400);
     }
 
     const booklist = await Booklist.create(req.body, req.params.username);
