@@ -33,9 +33,9 @@ router.get("/:type/:date/:isbn/:username", ensureCorrectUser, async function (re
         bookDetails["amazonLink"] = book.amazon_product_url;
       }
     }
-    console.log(bookFound);
     if (bookFound === false) return next(new ExpressError("No book found with that isbn for that bestsellers list date", 404));
     return res.json({ bookDetails });
+    
   } catch (err) {
     if(err.response.status === 404) return next(new ExpressError("No list found for list name and/or date provided", 404));
     else if (err.response.status === 400) return next(new ExpressError("Invalid data format", 400))
