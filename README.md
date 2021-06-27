@@ -2,7 +2,7 @@
 
 [Deployed on Heroku](https://book-wishlists.herokuapp.com)
 
-**Book Wishlists** is a web application for creating custom booklists, based on searches of the New York Times Bestsellers lists. This repository includes the backend for the application; the frontend repository can be found [here](https://github.com/mandyrb/book-wishlist-frontend)
+**Book Wishlists** is a web application for creating custom booklists, based on searches of the New York Times Bestsellers lists. This repository includes the backend for the application; the frontend repository can be found [here](https://github.com/mandyrb/book-wishlist-frontend).
 
 **Features and Routes**: The application backend includes routes for user login and registration, each returning a JWT token that can be used as an authorization header to authenticate future requests. An authenticated user can access a GET route to view their own user details, as well as a DELETE route to delete their account. They can make GET requests to obtain a list of ten books from a New York Times bestsellers list, given a list date and type (fiction or nonfiction), or to retrieve book details using the book's ISBN, list date, and type. They can make POST requests to create custom booklists and to add books to those lists, and they can make DELETE requests to delete booklists or to remove books from a given list.
 
